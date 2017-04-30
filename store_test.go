@@ -27,8 +27,8 @@ var getCasesNegative = []struct {
 }
 
 func TestStoreGetFunction(t *testing.T) {
-	m := URLStore{}
-	loadURLStore(&m)
+	m := NewURLStore()
+	loadURLStore(m)
 	for _, cases := range getCasesPositive {
 		getValue := m.Get(cases.key)
 		if getValue != cases.expectedValue {
@@ -43,16 +43,29 @@ func TestStoreGetFunction(t *testing.T) {
 	}
 }
 
+func TestStoreCount(t *testing.T) {
+	m := NewURLStore()
+	count := m.Count()
+	if count != 0 {
+		t.Errorf("Expected the store count to be 0 but got %d", count)
+	}
+	loadURLStore(m)
+	count = m.Count()
+	if count != len(getTestData) {
+		t.Errorf("Expected store count to be %d but was found to be %d", len(getTestData), count)
+	}
+}
+
 func TestStoreSetFunction(t *testing.T) {
-	m := URLStore{}
-	loadURLStore(&m)
+	m := NewURLStore()
+	loadURLStore(m)
 	// get the first element of the test data and set it again.
 	data := getTestData[0]
-	_, err := m.Set(data.key, data.value)
-	if err == nil {
+	isSet := m.Set(data.key, data.value)
+	if isSet {
 		t.Errorf("Expected an error when inserting the same key to the store.")
 	} else {
-		t.Logf(err.Error())
+		t.Logf("The key %s was found in the store so cannot be used.", data.key)
 	}
 }
 
